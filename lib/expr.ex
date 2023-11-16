@@ -792,6 +792,15 @@ defmodule AshPostgres.Expr do
            }
          ) do
       {:ok, expression} ->
+        expression =
+          Ash.Actions.Read.add_calc_context_to_filter(
+            expression,
+            calculation.context[:actor],
+            calculation.context[:authorize?],
+            calculation.context[:tenant],
+            calculation.context[:tracer]
+          )
+
         do_dynamic_expr(
           query,
           expression,
@@ -975,6 +984,15 @@ defmodule AshPostgres.Expr do
            }
          ) do
       {:ok, hydrated} ->
+        hydrated =
+          Ash.Actions.Read.add_calc_context_to_filter(
+            hydrated,
+            calculation.context[:actor],
+            calculation.context[:authorize?],
+            calculation.context[:tenant],
+            calculation.context[:tracer]
+          )
+
         expr =
           do_dynamic_expr(
             query,
@@ -1105,6 +1123,7 @@ defmodule AshPostgres.Expr do
         first_relationship.destination,
         first_relationship,
         query,
+        false,
         [first_relationship.name]
       )
 
@@ -1211,6 +1230,7 @@ defmodule AshPostgres.Expr do
               first_relationship.through,
               through_relationship,
               query,
+              false,
               [first_relationship.join_relationship],
               through_bindings,
               nil,
@@ -1474,13 +1494,23 @@ defmodule AshPostgres.Expr do
 
   defp ref_binding(%{attribute: %Ash.Resource.Attribute{}} = ref, bindings) do
     Enum.find_value(bindings.bindings, fn {binding, data} ->
-      data.path == ref.relationship_path && data.type in [:inner, :left, :root] && binding
+      data.type in [:inner, :left, :root] &&
+        Ash.SatSolver.synonymous_relationship_paths?(
+          bindings.resource,
+          data.path,
+          ref.relationship_path
+        ) && binding
     end)
   end
 
   defp ref_binding(%{attribute: %Ash.Query.Aggregate{}} = ref, bindings) do
     Enum.find_value(bindings.bindings, fn {binding, data} ->
-      data.path == ref.relationship_path && data.type in [:inner, :left, :root] && binding
+      data.type in [:inner, :left, :root] &&
+        Ash.SatSolver.synonymous_relationship_paths?(
+          bindings.resource,
+          data.path,
+          ref.relationship_path
+        ) && binding
     end)
   end
 
