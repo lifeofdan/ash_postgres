@@ -653,7 +653,7 @@ defmodule AshPostgres.CalculationTest do
       |> Ash.Query.load(author: :description)
       |> Api.read_one!(actor: user)
 
-    assert can_get_author_description_post.author.description == "actor"
+    assert can_get_author_description_post.author.description == "Prolific describer of worlds..."
 
     can_get_author_description_from_aggregate_post =
       Post
