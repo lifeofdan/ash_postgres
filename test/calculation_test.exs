@@ -1,6 +1,18 @@
 defmodule AshPostgres.CalculationTest do
   use AshPostgres.RepoCase, async: false
-  alias AshPostgres.Test.{Account, Api, Author, Comment, Organization, Post, Profile, User}
+
+  alias AshPostgres.Test.{
+    Account,
+    Api,
+    Author,
+    Comment,
+    Organization,
+    Organization,
+    Post,
+    Profile,
+    Profile,
+    User
+  }
 
   require Ash.Query
   import Ash.Expr
@@ -671,5 +683,66 @@ defmodule AshPostgres.CalculationTest do
 
     assert can_get_author_description_from_calculation_of_aggregate_post.author_profile_description_from_agg ==
              "actor found"
+  end
+
+  @tag :focus
+  test "calculation passes actor to aggregate from calculation on aggregate" do
+    org =
+      Organization
+      |> Ash.Changeset.new(%{name: "The Org"})
+      |> Api.create!()
+
+    user =
+      User
+      |> Ash.Changeset.for_create(:create, %{is_active: true})
+      |> Ash.Changeset.manage_relationship(:organization, org, type: :append_and_remove)
+      |> Api.create!()
+
+    profile =
+      Profile
+      |> Ash.Changeset.for_create(:create, %{description: "Prolific describer of worlds..."})
+      |> Api.create!()
+
+    author =
+      Author
+      |> Ash.Changeset.for_create(:create, %{
+        first_name: "Foo",
+        bio: %{title: "Mr.", bio: "Bones"}
+      })
+      |> Ash.Changeset.manage_relationship(:profile, profile, type: :append)
+      |> Api.create!()
+
+    created_post =
+      Post
+      |> Ash.Changeset.new(%{title: "match"})
+      |> Ash.Changeset.manage_relationship(:organization, org, type: :append_and_remove)
+      |> Ash.Changeset.manage_relationship(:author, author, type: :append_and_remove)
+      |> Api.create!()
+
+    can_get_author_description_post =
+      Post
+      |> Ash.Query.filter(id == ^created_post.id)
+      |> Ash.Query.load(author: :description)
+      |> Api.read_one!(actor: user)
+
+    assert can_get_author_description_post.author.description == "Prolific describer of worlds..."
+
+    can_get_author_description_from_aggregate_post =
+      Post
+      |> Ash.Query.filter(id == ^created_post.id)
+      |> Ash.Query.load(:author_profile_description)
+      |> Api.read_one!(actor: user)
+
+    assert can_get_author_description_from_aggregate_post.author_profile_description ==
+             "Prolific describer of worlds..."
+
+    can_get_author_description_from_calculation_of_aggregate_post =
+      Post
+      |> Ash.Query.filter(id == ^created_post.id)
+      |> Ash.Query.load(:author_profile_description_from_agg)
+      |> Api.read_one!(actor: user)
+
+    assert can_get_author_description_from_calculation_of_aggregate_post.author_profile_description_from_agg ==
+             "Prolific describer of worlds..."
   end
 end
