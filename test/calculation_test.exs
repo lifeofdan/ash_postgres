@@ -625,7 +625,7 @@ defmodule AshPostgres.CalculationTest do
              |> Enum.map(&Map.get(&1, :calc_returning_json))
   end
 
-  @tag :V
+  @tag :focus
   test "calculation passes actor to aggregate from calculation on aggregate" do
     org =
       Organization
