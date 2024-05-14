@@ -27,7 +27,6 @@ defmodule AshPostgres.PolymorphismTest do
              |> Map.get(:ratings)
   end
 
-  @tag :focus
   test "you can create with a relationship on polymorphic resource" do
     hashtag =
       Hashtag
