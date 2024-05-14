@@ -274,6 +274,12 @@ defmodule AshPostgres.Test.Post do
       relationship_context: %{data_layer: %{table: "post_ratings"}}
     )
 
+    has_many(:hashtag_assignments, AshPostgres.Test.HashtagAssignment,
+      public?: true,
+      destination_attribute: :resource_id,
+      relationship_context: %{data_layer: %{table: "post_hashtag_assignments"}}
+    )
+
     has_many(:post_links, AshPostgres.Test.PostLink,
       public?: true,
       destination_attribute: :source_post_id,

@@ -1,0 +1,85 @@
+{
+  "attributes": [
+    {
+      "default": "fragment(\"gen_random_uuid()\")",
+      "size": null,
+      "type": "uuid",
+      "source": "id",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": true
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "uuid",
+      "source": "resource_id",
+      "references": {
+        "name": "post_hashtag_assignments_resource_id_fkey",
+        "table": "posts",
+        "schema": null,
+        "on_delete": null,
+        "multitenancy": {
+          "global": null,
+          "attribute": null,
+          "strategy": null
+        },
+        "primary_key?": true,
+        "destination_attribute": "id",
+        "on_update": null,
+        "deferrable": false,
+        "match_type": null,
+        "match_with": null,
+        "destination_attribute_default": "fragment(\"gen_random_uuid()\")",
+        "destination_attribute_generated": false
+      },
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "uuid",
+      "source": "hashtag_id",
+      "references": {
+        "name": "post_hashtag_assignments_hashtag_id_fkey",
+        "table": "hashtags",
+        "schema": "public",
+        "on_delete": null,
+        "multitenancy": {
+          "global": null,
+          "attribute": null,
+          "strategy": null
+        },
+        "primary_key?": true,
+        "destination_attribute": "id",
+        "on_update": null,
+        "deferrable": false,
+        "match_type": null,
+        "match_with": null,
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null
+      },
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    }
+  ],
+  "table": "post_hashtag_assignments",
+  "hash": "C06420F9ABBD0AB68A15D2516D8CC4164035777B8519E38858F83D1596868F61",
+  "repo": "Elixir.AshPostgres.TestRepo",
+  "identities": [],
+  "schema": null,
+  "check_constraints": [],
+  "custom_indexes": [],
+  "base_filter": null,
+  "multitenancy": {
+    "global": null,
+    "attribute": null,
+    "strategy": null
+  },
+  "custom_statements": [],
+  "has_create_action": true
+}

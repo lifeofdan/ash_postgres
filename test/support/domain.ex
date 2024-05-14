@@ -19,6 +19,8 @@ defmodule AshPostgres.Test.Domain do
     resource(AshPostgres.Test.TempEntity)
     resource(AshPostgres.Test.Record)
     resource(AshPostgres.Test.PostFollower)
+    resource(AshPostgres.Test.HashtagAssignment)
+    resource(AshPostgres.Test.Hashtag)
   end
 
   authorization do
