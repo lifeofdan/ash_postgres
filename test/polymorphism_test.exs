@@ -28,7 +28,7 @@ defmodule AshPostgres.PolymorphismTest do
   end
 
   @tag :focus
-  test "you can create relationship on polymorphic resource" do
+  test "you can create with a relationship on polymorphic resource" do
     hashtag =
       Hashtag
       |> Ash.Changeset.for_create(:create, %{label: "foobar"})
@@ -36,9 +36,11 @@ defmodule AshPostgres.PolymorphismTest do
 
     post = Post |> Ash.Changeset.for_create(:create) |> Ash.create!()
 
-    HashtagAssignment
-    |> Ash.Changeset.for_create(:create, %{resource_id: post.id})
-    |> Ash.Changeset.manage_relationship(:hashtag, hashtag, type: :append_and_remove)
-    |> Ash.create!()
+    assert {:ok, _} =
+             HashtagAssignment
+             |> Ash.Changeset.for_create(:create, %{resource_id: post.id})
+             |> Ash.Changeset.set_context(%{data_layer: %{table: "post_hashtag_assignments"}})
+             |> Ash.Changeset.manage_relationship(:hashtag, hashtag, type: :append_and_remove)
+             |> Ash.create()
   end
 end
